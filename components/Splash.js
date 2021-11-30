@@ -14,12 +14,20 @@ const Splash = () => {
   }, [])
 
   return (
-    <View>
-      <Text></Text>
+    <View style={styles.container}>
+      <Text>Welcome to TrickyDex</Text>
     </View>
   )
 }
 
 export default Splash
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#ecf0f1',
+  },
+})
