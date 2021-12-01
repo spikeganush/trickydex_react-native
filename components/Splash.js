@@ -1,21 +1,22 @@
 import React, { useEffect } from 'react'
-import { StyleSheet, Text, View } from 'react-native'
-import { View, Text } from 'react-native'
+import { Image, StyleSheet, Text, View } from 'react-native'
 import Constants from 'expo-constants'
 import { useNavigation } from '@react-navigation/native'
+import logo from '../assets/adaptive-icon.png'
 
 const Splash = () => {
   const navigation = useNavigation()
 
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('Home')
-    }, 2000)
+      navigation.navigate('Signin')
+    }, 3000)
   }, [])
 
   return (
     <View style={styles.container}>
-      <Text>Welcome to TrickyDex</Text>
+      <Text style={styles.title}>Welcome to TrickyDex</Text>
+      <Image source={logo} style={styles.logo} />
     </View>
   )
 }
@@ -28,6 +29,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: Constants.statusBarHeight,
-    backgroundColor: '#ecf0f1',
+    backgroundColor: '#1A73E9',
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  logo: {
+    width: 200,
+    height: 200,
   },
 })
