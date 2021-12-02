@@ -97,7 +97,7 @@ const Home = (props) => {
         <TouchableOpacity onPress={() => navigation.navigate('Airs')}>
           <View style={[styles.card, styles.airsCard]}>
             <View style={[styles.cardinfo]}>
-              <Text style={styles.cardTitle}>Slides</Text>
+              <Text style={styles.cardTitle}>Airs</Text>
               <Text style={styles.cardProgression}>Progression</Text>
               <Text style={styles.cardProgressionText}> 05/10</Text>
               <View style={styles.cardProgressBar} />
@@ -109,7 +109,7 @@ const Home = (props) => {
         <TouchableOpacity onPress={() => navigation.navigate('Grabs')}>
           <View style={[styles.card, styles.grabsCard]}>
             <View style={[styles.cardinfo]}>
-              <Text style={styles.cardTitle}>Slides</Text>
+              <Text style={styles.cardTitle}>Grabs</Text>
               <Text style={styles.cardProgression}>Progression</Text>
               <Text style={styles.cardProgressionText}> 05/10</Text>
               <View style={styles.cardProgressBar} />
@@ -147,13 +147,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: '#1A73E9',
+    paddingTop: 10,
   },
   avatar: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    borderColor: '#000',
-    borderWidth: 1,
     backgroundColor: '#E0DDCE',
   },
   headerImage: {
@@ -266,6 +265,7 @@ const styles = StyleSheet.create({
   },
   grabsCard: {
     backgroundColor: '#67A2FA',
+    marginBottom: 15,
   },
   grabsRightPart: {
     backgroundColor: '#BFE2FB',

@@ -48,6 +48,9 @@ export default function App() {
   const [signupError, setSignupError] = useState()
   const [signinError, setSigninError] = useState()
   const [tricks, setTricks] = useState([])
+  const [slides, setSlides] = useState([])
+  const [airs, setAirs] = useState([])
+  const [grabs, setGrabs] = useState([])
   const [nbTricks, setNbTricks] = useState([])
 
   useEffect(() => {
@@ -60,6 +63,15 @@ export default function App() {
         }
         if (nbTricks.length === 0) {
           getNbTricks()
+        }
+        if (slides.length === 0) {
+          getTricksPerCategory('Slide')
+        }
+        if (airs.length === 0) {
+          getTricksPerCategory('Air')
+        }
+        if (grabs.length === 0) {
+          getTricksPerCategory('Grab')
         }
       } else {
         setAuth(false)
@@ -127,6 +139,32 @@ export default function App() {
         FSdata.push(item)
       })
       setTricks(FSdata)
+    })
+  }
+
+  const getTricksPerCategory = (category) => {
+    // console.log('...getting data', tricks)
+    const FSquery = query(
+      collection(FSdb, 'Tricks'),
+      where('category', '==', category)
+    )
+    const unsubscribe = onSnapshot(FSquery, (querySnapshot) => {
+      let FSdata = []
+      querySnapshot.forEach((doc) => {
+        let item = {}
+        item = doc.data()
+        item.id = doc.id
+        FSdata.push(item)
+      })
+      if (category === 'Slide') {
+        setSlides(FSdata)
+      }
+      if (category === 'Air') {
+        setAirs(FSdata)
+      }
+      if (category === 'Grab') {
+        setGrabs(FSdata)
+      }
     })
   }
 
@@ -222,31 +260,32 @@ export default function App() {
         <Stack.Screen
           name="Slides"
           options={{
-            headerShown: false,
+            headerTitle: 'Slides',
+            headerShown: true,
           }}
         >
           {(props) => (
-            <Slides {...props} auth={auth} tricks={tricks} user={user} />
+            <Slides {...props} auth={auth} tricks={slides} user={user} />
           )}
         </Stack.Screen>
         <Stack.Screen
           name="Airs"
           options={{
-            headerShown: false,
+            headerTitle: 'Airs',
+            headerShown: true,
           }}
         >
-          {(props) => (
-            <Airs {...props} auth={auth} tricks={tricks} user={user} />
-          )}
+          {(props) => <Airs {...props} auth={auth} tricks={airs} user={user} />}
         </Stack.Screen>
         <Stack.Screen
           name="Grabs"
           options={{
-            headerShown: false,
+            headerTitle: 'Grabs',
+            headerShown: true,
           }}
         >
           {(props) => (
-            <Grabs {...props} auth={auth} tricks={tricks} user={user} />
+            <Grabs {...props} auth={auth} tricks={grabs} user={user} />
           )}
         </Stack.Screen>
       </Stack.Navigator>
