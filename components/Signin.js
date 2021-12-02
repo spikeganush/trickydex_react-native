@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import {
+  KeyboardAvoidingView,
   StyleSheet,
   Text,
   TextInput,
@@ -9,6 +10,30 @@ import {
 import Constants from 'expo-constants'
 
 const Signin = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        setError('')
+      }, 3000)
+    }
+  }, [error])
+
+  const handleSignin = async () => {
+    if (!email || !password) {
+      setError('Please fill all the fields')
+    } else {
+      try {
+        await firebase.auth().signInWithEmailAndPassword(email, password)
+      } catch (error) {
+        setError(error.message)
+      }
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
