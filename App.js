@@ -9,6 +9,7 @@ import Home from './components/Home'
 import Signup from './components/Signup'
 import Signin from './components/Signin'
 import Signout from './components/Signout'
+import Slides from './components/Slides'
 //firebase
 import { firebaseConfig } from './Config'
 import { initializeApp } from 'firebase/app'
@@ -214,6 +215,16 @@ export default function App() {
               error={signinError}
               handler={SigninHandler}
             />
+          )}
+        </Stack.Screen>
+        <Stack.Screen
+          name="Slides"
+          options={{
+            headerShown: false,
+          }}
+        >
+          {(props) => (
+            <Slides {...props} auth={auth} tricks={tricks} user={user} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

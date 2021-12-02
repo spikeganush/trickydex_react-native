@@ -17,7 +17,6 @@ const Home = (props) => {
   const [userDetails, setUserDetails] = useState()
   const [selectCategoryClicked, setSelectCategoryClicked] = useState(false)
   const [selectedCategories, setSelectedCategories] = useState()
-  console.log(selectedCategories)
   const handleChips = (props) => {
     setSelectedCategories(props)
   }
@@ -82,15 +81,17 @@ const Home = (props) => {
         ) : null}
       </View>
       <ScrollView style={styles.body}>
-        <View style={[styles.card, styles.slidesCard]}>
-          <View style={[styles.slidesinfo]}>
-            <Text style={styles.cardTitle}>Slides</Text>
-            <Text style={styles.cardProgression}>Progression</Text>
-            <Text style={styles.cardProgressionText}> 05/10</Text>
-            <View style={styles.cardProgressBar} />
+        <TouchableOpacity onPress={() => navigation.navigate('Slides')}>
+          <View style={[styles.card, styles.slidesCard]}>
+            <View style={[styles.slidesinfo]}>
+              <Text style={styles.cardTitle}>Slides</Text>
+              <Text style={styles.cardProgression}>Progression</Text>
+              <Text style={styles.cardProgressionText}> 05/10</Text>
+              <View style={styles.cardProgressBar} />
+            </View>
+            <View style={[styles.cardRightPart, styles.slidesRightPart]} />
           </View>
-          <View style={[styles.cardRightPart, styles.slidesRightPart]} />
-        </View>
+        </TouchableOpacity>
       </ScrollView>
     </View>
   )
