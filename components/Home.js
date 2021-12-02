@@ -1,11 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { Image, StyleSheet, Text, View } from 'react-native'
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ScrollView,
+} from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Constants from 'expo-constants'
+
+import SelectableChips from 'react-native-chip/SelectableChips'
 
 const Home = (props) => {
   const navigation = useNavigation()
   const [userDetails, setUserDetails] = useState()
+  const [selectCategoryClicked, setSelectCategoryClicked] = useState(false)
+  const [selectedCategories, setSelectedCategories] = useState()
+  console.log(selectedCategories)
+  const handleChips = (props) => {
+    setSelectedCategories(props)
+  }
 
   useEffect(() => {
     if (!props.auth) {
@@ -41,6 +56,42 @@ const Home = (props) => {
           )}
         </View>
       </View>
+      <View
+        style={
+          selectCategoryClicked
+            ? styles.selectCategoriesClicked
+            : styles.selectCategories
+        }
+      >
+        <TouchableOpacity
+          style={styles.buttonSelectedCategories}
+          onPress={() => setSelectCategoryClicked(!selectCategoryClicked)}
+        >
+          <Text style={styles.selectCategoriesText}>All Categories</Text>
+        </TouchableOpacity>
+        {selectCategoryClicked ? (
+          <SelectableChips
+            initialChips={['All', 'Slides', 'Airs', 'Grabs']}
+            onChangeChips={(chips) => handleChips(chips)}
+            chipStyle={styles.chipStyle}
+            valueStyle={styles.chipValueStyle}
+            chipStyleSelected={styles.chipStyleSelected}
+            valueStyleSelected={styles.chipValueStyleSelected}
+            alertRequired={false}
+          />
+        ) : null}
+      </View>
+      <ScrollView style={styles.body}>
+        <View style={[styles.card, styles.slidesCard]}>
+          <View style={[styles.slidesinfo]}>
+            <Text style={styles.cardTitle}>Slides</Text>
+            <Text style={styles.cardProgression}>Progression</Text>
+            <Text style={styles.cardProgressionText}> 05/10</Text>
+            <View style={styles.cardProgressBar} />
+          </View>
+          <View style={[styles.cardRightPart, styles.slidesRightPart]} />
+        </View>
+      </ScrollView>
     </View>
   )
 }
@@ -53,6 +104,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     marginTop: Constants.statusBarHeight,
+    paddingLeft: 15,
+    paddingRight: 15,
   },
   header: {
     flex: 1,
@@ -63,8 +116,6 @@ const styles = StyleSheet.create({
     width: '100%',
     maxHeight: '20%',
     marginTop: 15,
-    paddingLeft: 15,
-    paddingRight: 15,
   },
   headerText: {
     fontSize: 18,
@@ -91,5 +142,94 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  selectCategories: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    width: '100%',
+    marginTop: 15,
+    maxHeight: 45,
+  },
+  selectCategoriesClicked: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    width: '100%',
+    marginTop: 15,
+    maxHeight: 90,
+  },
+  buttonSelectedCategories: {
+    backgroundColor: '#DADADA',
+    padding: 10,
+    paddingRight: 50,
+    borderRadius: 6,
+  },
+  selectCategoriesText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#757575',
+  },
+  chipStyle: {
+    backgroundColor: '#DADADA',
+    borderColor: '#DADADA',
+  },
+  chipValueStyle: {
+    color: '#757575',
+  },
+  chipStyleSelected: {
+    backgroundColor: '#1A73E9',
+    borderColor: '#1A73E9',
+  },
+  chipValueStyleSelected: {
+    color: '#fff',
+  },
+  body: {
+    flex: 1,
+    backgroundColor: '#fff',
+    width: '100%',
+  },
+  card: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginTop: 15,
+    borderRadius: 10,
+    paddingLeft: 15,
+  },
+  cardTitle: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#000',
+    paddingTop: 10,
+  },
+  cardProgression: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#000',
+    paddingTop: 10,
+  },
+  cardProgressionText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  slidesCard: {
+    backgroundColor: '#FA6767',
+  },
+  cardRightPart: {
+    borderTopLeftRadius: 50,
+    borderBottomLeftRadius: 50,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    height: '100%',
+    width: '30%',
+  },
+  slidesRightPart: {
+    backgroundColor: '#FBBFBF',
   },
 })
