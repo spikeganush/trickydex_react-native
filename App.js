@@ -10,6 +10,8 @@ import Signup from './components/Signup'
 import Signin from './components/Signin'
 import Signout from './components/Signout'
 import Slides from './components/Slides'
+import Airs from './components/Airs'
+import Grabs from './components/Grabs'
 //firebase
 import { firebaseConfig } from './Config'
 import { initializeApp } from 'firebase/app'
@@ -225,6 +227,26 @@ export default function App() {
         >
           {(props) => (
             <Slides {...props} auth={auth} tricks={tricks} user={user} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen
+          name="Airs"
+          options={{
+            headerShown: false,
+          }}
+        >
+          {(props) => (
+            <Airs {...props} auth={auth} tricks={tricks} user={user} />
+          )}
+        </Stack.Screen>
+        <Stack.Screen
+          name="Grabs"
+          options={{
+            headerShown: false,
+          }}
+        >
+          {(props) => (
+            <Grabs {...props} auth={auth} tricks={tricks} user={user} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

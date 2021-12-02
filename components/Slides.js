@@ -1,7 +1,7 @@
 import React from 'react'
 import { StyleSheet, Text, View } from 'react-native'
 
-const Slides = () => {
+const Slides = (props) => {
   return (
     <View>
       <Text>Slides</Text>

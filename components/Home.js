@@ -81,6 +81,7 @@ const Home = (props) => {
         ) : null}
       </View>
       <ScrollView style={styles.body}>
+        {/* slides */}
         <TouchableOpacity onPress={() => navigation.navigate('Slides')}>
           <View style={[styles.card, styles.slidesCard]}>
             <View style={[styles.slidesinfo]}>
@@ -90,6 +91,30 @@ const Home = (props) => {
               <View style={styles.cardProgressBar} />
             </View>
             <View style={[styles.cardRightPart, styles.slidesRightPart]} />
+          </View>
+        </TouchableOpacity>
+        {/* Airs */}
+        <TouchableOpacity onPress={() => navigation.navigate('Airs')}>
+          <View style={[styles.card, styles.airsCard]}>
+            <View style={[styles.cardinfo]}>
+              <Text style={styles.cardTitle}>Slides</Text>
+              <Text style={styles.cardProgression}>Progression</Text>
+              <Text style={styles.cardProgressionText}> 05/10</Text>
+              <View style={styles.cardProgressBar} />
+            </View>
+            <View style={[styles.cardRightPart, styles.airsRightPart]} />
+          </View>
+        </TouchableOpacity>
+        {/* Grabs */}
+        <TouchableOpacity onPress={() => navigation.navigate('Grabs')}>
+          <View style={[styles.card, styles.grabsCard]}>
+            <View style={[styles.cardinfo]}>
+              <Text style={styles.cardTitle}>Slides</Text>
+              <Text style={styles.cardProgression}>Progression</Text>
+              <Text style={styles.cardProgressionText}> 05/10</Text>
+              <View style={styles.cardProgressBar} />
+            </View>
+            <View style={[styles.cardRightPart, styles.grabsRightPart]} />
           </View>
         </TouchableOpacity>
       </ScrollView>
@@ -232,5 +257,17 @@ const styles = StyleSheet.create({
   },
   slidesRightPart: {
     backgroundColor: '#FBBFBF',
+  },
+  airsCard: {
+    backgroundColor: '#67FAA2',
+  },
+  airsRightPart: {
+    backgroundColor: '#BFFBE5',
+  },
+  grabsCard: {
+    backgroundColor: '#67A2FA',
+  },
+  grabsRightPart: {
+    backgroundColor: '#BFE2FB',
   },
 })
