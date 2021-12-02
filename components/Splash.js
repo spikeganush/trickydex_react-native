@@ -2,14 +2,20 @@ import React, { useEffect } from 'react'
 import { Image, StyleSheet, Text, View } from 'react-native'
 import Constants from 'expo-constants'
 import { useNavigation } from '@react-navigation/native'
+
 import logo from '../assets/adaptive-icon.png'
 
-const Splash = () => {
+const Splash = (props) => {
   const navigation = useNavigation()
 
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('Signin')
+      if (!props.auth) {
+        navigation.navigate('Signin')
+      } else {
+        // console.log('auth', props)
+        navigation.navigate('Home')
+      }
     }, 3000)
   }, [])
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import {
-  KeyboardAvoidingView,
   StyleSheet,
   Text,
   TextInput,
@@ -8,8 +7,10 @@ import {
   View,
 } from 'react-native'
 import Constants from 'expo-constants'
+import { useNavigation } from '@react-navigation/native'
 
-const Signin = () => {
+const Signin = (props) => {
+  const navigation = useNavigation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -22,17 +23,11 @@ const Signin = () => {
     }
   }, [error])
 
-  const handleSignin = async () => {
-    if (!email || !password) {
-      setError('Please fill all the fields')
-    } else {
-      try {
-        await firebase.auth().signInWithEmailAndPassword(email, password)
-      } catch (error) {
-        setError(error.message)
-      }
+  useEffect(() => {
+    if (props.auth === true) {
+      navigation.reset({ index: 0, routes: [{ name: 'Home' }] })
     }
-  }
+  }, [props.auth])
 
   return (
     <View style={styles.container}>
@@ -48,6 +43,7 @@ const Signin = () => {
           autoCapitalize="none"
           textContentType="emailAddress"
           autoComplete="email"
+          onChangeText={(text) => setEmail(text)}
         />
         <TextInput
           style={styles.signinInput}
@@ -56,13 +52,24 @@ const Signin = () => {
           secureTextEntry={true}
           textContentType="password"
           autoComplete="password"
+          onChangeText={(text) => setPassword(text)}
         />
       </View>
       <View style={styles.signinButtonArea}>
-        <TouchableOpacity style={[styles.buttons, styles.signinButton]}>
+        <TouchableOpacity
+          style={[styles.buttons, styles.signinButton]}
+          onPress={() => {
+            props.handler(email, password)
+          }}
+        >
           <Text style={styles.buttonText}>LOGIN</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.buttons, styles.signupButton]}>
+        <TouchableOpacity
+          style={[styles.buttons, styles.signupButton]}
+          onPress={() => {
+            navigation.navigate('Signup')
+          }}
+        >
           <Text style={styles.buttonText}>CREATE AN ACCOUNT</Text>
         </TouchableOpacity>
       </View>
@@ -133,7 +140,6 @@ const styles = StyleSheet.create({
     height: 40,
     marginBottom: 10,
     borderRadius: 6,
-    backgroundColor: '#1A73E9',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

@@ -8,6 +8,7 @@ import Splash from './components/Splash'
 import Home from './components/Home'
 import Signup from './components/Signup'
 import Signin from './components/Signin'
+import Signout from './components/Signout'
 //firebase
 import { firebaseConfig } from './Config'
 import { initializeApp } from 'firebase/app'
@@ -39,20 +40,23 @@ const FBauth = getAuth()
 const Stack = createNativeStackNavigator()
 
 export default function App() {
-  const [auth, setAuth] = useState()
+  const [auth, setAuth] = useState(true)
   const [user, setUser] = useState()
   const [signupError, setSignupError] = useState()
   const [signinError, setSigninError] = useState()
-  const [trickTricks] = useState()
+  const [tricks, setTricks] = useState([])
+  const [nbTricks, setNbTricks] = useState([])
 
   useEffect(() => {
     onAuthStateChanged(FBauth, (user) => {
       if (user) {
         setAuth(true)
         setUser(user)
-        // console.log( 'authed')
-        if (!tricks) {
+        if (tricks.length === 0) {
           getTricks()
+        }
+        if (nbTricks.length === 0) {
+          getNbTricks()
         }
       } else {
         setAuth(false)
@@ -61,11 +65,22 @@ export default function App() {
     })
   })
 
-  const SignupHandler = (email, password) => {
+  const SignupHandler = (email, password, firstName, lastName) => {
     setSignupError(null)
     createUserWithEmailAndPassword(FBauth, email, password)
-      .then((userCredential) => {
-        setUser(userCredential.user)
+      .then(() => {
+        setDoc(doc(FSdb, 'Users', FBauth.currentUser.uid), {
+          email: email,
+          firstname: firstName,
+          lastname: lastName,
+          Air: 0,
+          Grab: 0,
+          Slide: 0,
+          admin: false,
+          listDone: [], //list of tricks done
+        })
+
+        setUser(FBauth.currentUser.user)
         setAuth(true)
       })
       .catch((error) => {
@@ -75,10 +90,10 @@ export default function App() {
 
   const SigninHandler = (email, password) => {
     signInWithEmailAndPassword(FBauth, email, password)
-      .then((userCredential) => {
-        setUser(userCredential.user)
+      .then(() => {
+        setUser(FBauth.currentUser.user)
         setAuth(true)
-        console.log(userCredential.user.uid)
+        console.log(FBauth.currentUser.uid)
       })
       .catch((error) => {
         const message = error.code.includes('/')
@@ -98,8 +113,8 @@ export default function App() {
   }
 
   const getTricks = () => {
-    console.log('...getting data', tricks)
-    const FSquery = query(collection(FSdb, `Tricks`))
+    // console.log('...getting data', tricks)
+    const FSquery = query(collection(FSdb, 'Tricks'))
     const unsubscribe = onSnapshot(FSquery, (querySnapshot) => {
       let FSdata = []
       querySnapshot.forEach((doc) => {
@@ -112,8 +127,24 @@ export default function App() {
     })
   }
 
-  const getDetail = async (id) => {
-    const docRef = doc(FSdb, `users/${user.uid}/documents`, id)
+  const getNbTricks = () => {
+    // console.log('...getting data', nbTricks)
+    const FSquery = query(collection(FSdb, 'NbTricks'))
+    const unsubscribe = onSnapshot(FSquery, (querySnapshot) => {
+      let FSdata = []
+      querySnapshot.forEach((doc) => {
+        let item = {}
+        item = doc.data()
+        item.id = doc.id
+        FSdata.push(item)
+      })
+      setNbTricks(FSdata)
+    })
+  }
+
+  const getUserDetails = async (id) => {
+    // console.log('...getting user details', id)
+    const docRef = doc(FSdb, 'Users', id)
     const docData = await getDoc(docRef)
     return new Promise((resolve, reject) => {
       if (docData.exists()) {
@@ -129,14 +160,62 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}
+      // screenOptions={{
+      //   headerShown: false,
+      // }}
       >
-        <Stack.Screen name="Splash" component={Splash} />
-        <Stack.Screen name="Home" component={Home} />
-        <Stack.Screen name="Signup" component={Signup} />
-        <Stack.Screen name="Signin" component={Signin} />
+        <Stack.Screen
+          name="Splash"
+          options={{
+            headerShown: false,
+          }}
+        >
+          {(props) => <Splash {...props} auth={auth} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="Home"
+          options={{
+            headerShown: false,
+            headerTitle: 'Home',
+            headerRight: (props) => (
+              <Signout {...props} handler={SignoutHandler} user={user} />
+            ),
+          }}
+        >
+          {(props) => (
+            <Home
+              {...props}
+              user={user}
+              tricks={tricks}
+              nbTricks={nbTricks}
+              auth={auth}
+              getUserDetails={getUserDetails}
+            />
+          )}
+        </Stack.Screen>
+        <Stack.Screen
+          name="Signup"
+          options={{
+            headerTitle: 'Create Account',
+          }}
+        >
+          {(props) => <Signup {...props} user={user} handler={SignupHandler} />}
+        </Stack.Screen>
+        <Stack.Screen
+          name="Signin"
+          options={{
+            headerShown: false,
+          }}
+        >
+          {(props) => (
+            <Signin
+              {...props}
+              auth={auth}
+              error={signinError}
+              handler={SigninHandler}
+            />
+          )}
+        </Stack.Screen>
       </Stack.Navigator>
       <StatusBar style="auto" />
     </NavigationContainer>
