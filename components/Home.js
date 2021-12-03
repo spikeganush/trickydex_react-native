@@ -31,7 +31,7 @@ const Home = (props) => {
     // console.log('Home.js: useEffect', props)
     if (userDetails === undefined) {
       props
-        .getUserDetails(props.user.uid)
+        .getUserDetails(props.user?.uid)
         .then((document) => setUserDetails(document))
         .catch((error) => console.log(error))
     }
@@ -41,19 +41,21 @@ const Home = (props) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerText}>TrickyDex</Text>
-        <View style={styles.headerImage}>
-          {props.user.imageUrl ? (
-            <Image
-              source={{ uri: props.user.imageUrl }}
-              style={styles.avatar}
-            />
-          ) : (
-            <Image
-              source={require('../img/account.png')}
-              style={styles.avatar}
-            />
-          )}
-        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <View style={styles.headerImage}>
+            {props.user?.imageUrl ? (
+              <Image
+                source={{ uri: props.user?.imageUrl }}
+                style={styles.avatar}
+              />
+            ) : (
+              <Image
+                source={require('../img/account.png')}
+                style={styles.avatar}
+              />
+            )}
+          </View>
+        </TouchableOpacity>
       </View>
       <View
         style={

@@ -9,6 +9,7 @@ import Home from './components/Home'
 import Signup from './components/Signup'
 import Signin from './components/Signin'
 import Signout from './components/Signout'
+import Profile from './components/Profile'
 import Slides from './components/Slides'
 import Airs from './components/Airs'
 import Grabs from './components/Grabs'
@@ -254,6 +255,23 @@ export default function App() {
               auth={auth}
               error={signinError}
               handler={SigninHandler}
+            />
+          )}
+        </Stack.Screen>
+        <Stack.Screen
+          name="Profile"
+          options={{
+            headerShown: true,
+            headerTitle: 'Profile',
+          }}
+        >
+          {(props) => (
+            <Profile
+              {...props}
+              user={user}
+              auth={auth}
+              handler={SignoutHandler}
+              getUserDetails={getUserDetails}
             />
           )}
         </Stack.Screen>
