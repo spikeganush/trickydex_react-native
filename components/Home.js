@@ -17,6 +17,14 @@ const Home = (props) => {
   const [userDetails, setUserDetails] = useState()
   const [selectCategoryClicked, setSelectCategoryClicked] = useState(false)
   const [selectedCategories, setSelectedCategories] = useState()
+
+  const [nbSlidesDone, setNbSlidesDone] = useState()
+  const [nbAirsDone, setNbAirsDone] = useState()
+  const [nbGrabsDone, setNbGrabsDone] = useState()
+
+  console.log('nbSlidesDone', nbSlidesDone)
+  console.log('nbAirsDone', nbAirsDone)
+  console.log('nbGrabsDone', nbGrabsDone)
   const handleChips = (props) => {
     setSelectedCategories(props)
   }
@@ -34,6 +42,18 @@ const Home = (props) => {
         .getUserDetails(props.user?.uid)
         .then((document) => setUserDetails(document))
         .catch((error) => console.log(error))
+    }
+
+    if (nbSlidesDone === undefined) {
+      setNbSlidesDone(props.getNbSlidesDone())
+    }
+
+    if (nbAirsDone === undefined) {
+      setNbAirsDone(props.getNbAirsDone())
+    }
+
+    if (nbGrabsDone === undefined) {
+      setNbGrabsDone(props.getNbGrabsDone())
     }
   }, [])
 
@@ -84,36 +104,54 @@ const Home = (props) => {
       </View>
       <ScrollView style={styles.body}>
         {/* slides */}
-        <TouchableOpacity onPress={() => navigation.navigate('Slides')}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('DetailsTricks', { category: 'Slides' })
+          }
+        >
           <View style={[styles.card, styles.slidesCard]}>
             <View style={[styles.slidesinfo]}>
               <Text style={styles.cardTitle}>Slides</Text>
               <Text style={styles.cardProgression}>Progression</Text>
-              <Text style={styles.cardProgressionText}> 05/10</Text>
+              <Text style={styles.cardProgressionText}>
+                {userDetails.Slide}/{nbSlidesDone}
+              </Text>
               <View style={styles.cardProgressBar} />
             </View>
             <View style={[styles.cardRightPart, styles.slidesRightPart]} />
           </View>
         </TouchableOpacity>
         {/* Airs */}
-        <TouchableOpacity onPress={() => navigation.navigate('Airs')}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('DetailsTricks', { category: 'Airs' })
+          }
+        >
           <View style={[styles.card, styles.airsCard]}>
             <View style={[styles.cardinfo]}>
               <Text style={styles.cardTitle}>Airs</Text>
               <Text style={styles.cardProgression}>Progression</Text>
-              <Text style={styles.cardProgressionText}> 05/10</Text>
+              <Text style={styles.cardProgressionText}>
+                {userDetails.Air}/{nbAirsDone}
+              </Text>
               <View style={styles.cardProgressBar} />
             </View>
             <View style={[styles.cardRightPart, styles.airsRightPart]} />
           </View>
         </TouchableOpacity>
         {/* Grabs */}
-        <TouchableOpacity onPress={() => navigation.navigate('Grabs')}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('DetailsTricks', { category: 'Grabs' })
+          }
+        >
           <View style={[styles.card, styles.grabsCard]}>
             <View style={[styles.cardinfo]}>
               <Text style={styles.cardTitle}>Grabs</Text>
               <Text style={styles.cardProgression}>Progression</Text>
-              <Text style={styles.cardProgressionText}> 05/10</Text>
+              <Text style={styles.cardProgressionText}>
+                {userDetails.Grab}/{nbGrabsDone}
+              </Text>
               <View style={styles.cardProgressBar} />
             </View>
             <View style={[styles.cardRightPart, styles.grabsRightPart]} />

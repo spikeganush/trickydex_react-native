@@ -1,3 +1,7 @@
+import { LogBox } from 'react-native'
+LogBox.ignoreLogs(['Setting a timer'])
+LogBox.ignoreLogs(['AsyncStorage'])
+
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet } from 'react-native'
@@ -10,9 +14,7 @@ import Signup from './components/Signup'
 import Signin from './components/Signin'
 import Signout from './components/Signout'
 import Profile from './components/Profile'
-import Slides from './components/Slides'
-import Airs from './components/Airs'
-import Grabs from './components/Grabs'
+import DetailsTricks from './components/DetailsTricks'
 //firebase
 import { firebaseConfig } from './Config'
 import { initializeApp } from 'firebase/app'
@@ -35,6 +37,10 @@ import {
   query,
   where,
   onSnapshot,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  increment,
 } from 'firebase/firestore'
 
 const FBapp = initializeApp(firebaseConfig)
@@ -48,23 +54,15 @@ export default function App() {
   const [user, setUser] = useState()
   const [signupError, setSignupError] = useState()
   const [signinError, setSigninError] = useState()
-  const [tricks, setTricks] = useState([])
   const [slides, setSlides] = useState([])
   const [airs, setAirs] = useState([])
   const [grabs, setGrabs] = useState([])
-  const [nbTricks, setNbTricks] = useState([])
 
   useEffect(() => {
     onAuthStateChanged(FBauth, (user) => {
       if (user) {
         setAuth(true)
         setUser(user)
-        if (tricks.length === 0) {
-          getTricks()
-        }
-        if (nbTricks.length === 0) {
-          getNbTricks()
-        }
         if (slides.length === 0) {
           getTricksPerCategory('Slide')
         }
@@ -128,19 +126,28 @@ export default function App() {
       .catch((error) => console.log(error.code))
   }
 
-  const getTricks = () => {
-    // console.log('...getting data', tricks)
-    const FSquery = query(collection(FSdb, 'Tricks'))
-    const unsubscribe = onSnapshot(FSquery, (querySnapshot) => {
-      let FSdata = []
-      querySnapshot.forEach((doc) => {
-        let item = {}
-        item = doc.data()
-        item.id = doc.id
-        FSdata.push(item)
-      })
-      setTricks(FSdata)
+  const getNbSlidesDone = () => {
+    let nbSlidesDone = 0
+    slides.forEach((slide) => {
+      nbSlidesDone++
     })
+    return nbSlidesDone
+  }
+
+  const getNbAirsDone = () => {
+    let nbAirsDone = 0
+    airs.forEach((air) => {
+      nbAirsDone++
+    })
+    return nbAirsDone
+  }
+
+  const getNbGrabsDone = () => {
+    let nbGrabsDone = 0
+    grabs.forEach((slide) => {
+      nbGrabsDone++
+    })
+    return nbGrabsDone
   }
 
   const getTricksPerCategory = (category) => {
@@ -169,21 +176,6 @@ export default function App() {
     })
   }
 
-  const getNbTricks = () => {
-    // console.log('...getting data', nbTricks)
-    const FSquery = query(collection(FSdb, 'NbTricks'))
-    const unsubscribe = onSnapshot(FSquery, (querySnapshot) => {
-      let FSdata = []
-      querySnapshot.forEach((doc) => {
-        let item = {}
-        item = doc.data()
-        item.id = doc.id
-        FSdata.push(item)
-      })
-      setNbTricks(FSdata)
-    })
-  }
-
   const getUserDetails = async (id) => {
     // console.log('...getting user details', id)
     const docRef = doc(FSdb, 'Users', id)
@@ -197,6 +189,42 @@ export default function App() {
         reject('no such document')
       }
     })
+  }
+
+  const addTrickListDone = async (userId, trickId, category) => {
+    const docRef = doc(FSdb, 'Users', userId)
+    category === 'Slide'
+      ? await updateDoc(docRef, {
+          listDone: arrayUnion(trickId),
+          Slide: increment(1),
+        })
+      : category === 'Air'
+      ? await updateDoc(docRef, {
+          listDone: arrayUnion(trickId),
+          Air: increment(1),
+        })
+      : await updateDoc(docRef, {
+          listDone: arrayUnion(trickId),
+          Grab: increment(1),
+        })
+  }
+
+  const removeTrickListDone = async (userId, trickId, category) => {
+    const docRef = doc(FSdb, 'Users', userId)
+    category === 'Slide'
+      ? await updateDoc(docRef, {
+          listDone: arrayUnion(trickId),
+          Slide: increment(-1),
+        })
+      : category === 'Air'
+      ? await updateDoc(docRef, {
+          listDone: arrayUnion(trickId),
+          Air: increment(-1),
+        })
+      : await updateDoc(docRef, {
+          listDone: arrayUnion(trickId),
+          Grab: increment(-1),
+        })
   }
 
   return (
@@ -228,10 +256,11 @@ export default function App() {
             <Home
               {...props}
               user={user}
-              tricks={tricks}
-              nbTricks={nbTricks}
               auth={auth}
               getUserDetails={getUserDetails}
+              getNbSlidesDone={getNbSlidesDone}
+              getNbAirsDone={getNbAirsDone}
+              getNbGrabsDone={getNbGrabsDone}
             />
           )}
         </Stack.Screen>
@@ -276,34 +305,24 @@ export default function App() {
           )}
         </Stack.Screen>
         <Stack.Screen
-          name="Slides"
+          name="DetailsTricks"
           options={{
             headerTitle: 'Slides',
             headerShown: true,
           }}
         >
           {(props) => (
-            <Slides {...props} auth={auth} tricks={slides} user={user} />
-          )}
-        </Stack.Screen>
-        <Stack.Screen
-          name="Airs"
-          options={{
-            headerTitle: 'Airs',
-            headerShown: true,
-          }}
-        >
-          {(props) => <Airs {...props} auth={auth} tricks={airs} user={user} />}
-        </Stack.Screen>
-        <Stack.Screen
-          name="Grabs"
-          options={{
-            headerTitle: 'Grabs',
-            headerShown: true,
-          }}
-        >
-          {(props) => (
-            <Grabs {...props} auth={auth} tricks={grabs} user={user} />
+            <DetailsTricks
+              {...props}
+              auth={auth}
+              slides={slides}
+              airs={airs}
+              grabs={grabs}
+              user={user}
+              getUserDetails={getUserDetails}
+              addTrickListDone={addTrickListDone}
+              removeTrickListDone={removeTrickListDone}
+            />
           )}
         </Stack.Screen>
       </Stack.Navigator>

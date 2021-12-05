@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 const Profile = (props) => {
   const navigation = useNavigation()
   const [userDetails, setUserDetails] = useState()
-  console.log('userDetails', userDetails)
+  //   console.log('userDetails', userDetails)
   useEffect(() => {
     if (!props.auth) {
       navigation.reset({ index: 0, routes: [{ name: 'Signin' }] })
