@@ -10,6 +10,8 @@ import {
 import { useNavigation } from '@react-navigation/native'
 import Constants from 'expo-constants'
 
+import ProgressBar from 'react-native-progress/Bar'
+
 import SelectableChips from 'react-native-chip/SelectableChips'
 
 const Home = (props) => {
@@ -22,9 +24,6 @@ const Home = (props) => {
   const [nbAirsDone, setNbAirsDone] = useState()
   const [nbGrabsDone, setNbGrabsDone] = useState()
 
-  console.log('nbSlidesDone', nbSlidesDone)
-  console.log('nbAirsDone', nbAirsDone)
-  console.log('nbGrabsDone', nbGrabsDone)
   const handleChips = (props) => {
     setSelectedCategories(props)
   }
@@ -114,9 +113,19 @@ const Home = (props) => {
               <Text style={styles.cardTitle}>Slides</Text>
               <Text style={styles.cardProgression}>Progression</Text>
               <Text style={styles.cardProgressionText}>
-                {userDetails.Slide}/{nbSlidesDone}
+                {userDetails?.Slide}/{nbSlidesDone}
               </Text>
-              <View style={styles.cardProgressBar} />
+              <View style={[styles.progression]}>
+                <ProgressBar
+                  style={styles.progressBar}
+                  progress={userDetails?.Slide / nbSlidesDone || 0}
+                  width={200}
+                />
+                <Text style={styles.progressBarText}>
+                  {' '}
+                  {((userDetails?.Slide / nbSlidesDone) * 100).toFixed(0)}%
+                </Text>
+              </View>
             </View>
             <View style={[styles.cardRightPart, styles.slidesRightPart]} />
           </View>
@@ -132,9 +141,19 @@ const Home = (props) => {
               <Text style={styles.cardTitle}>Airs</Text>
               <Text style={styles.cardProgression}>Progression</Text>
               <Text style={styles.cardProgressionText}>
-                {userDetails.Air}/{nbAirsDone}
+                {userDetails?.Air}/{nbAirsDone}
               </Text>
-              <View style={styles.cardProgressBar} />
+              <View style={[styles.progression]}>
+                <ProgressBar
+                  style={styles.progressBar}
+                  progress={userDetails?.Air / nbAirsDone || 0}
+                  width={200}
+                />
+                <Text style={styles.progressBarText}>
+                  {' '}
+                  {((userDetails?.Air / nbAirsDone) * 100).toFixed(0)}%
+                </Text>
+              </View>
             </View>
             <View style={[styles.cardRightPart, styles.airsRightPart]} />
           </View>
@@ -150,9 +169,19 @@ const Home = (props) => {
               <Text style={styles.cardTitle}>Grabs</Text>
               <Text style={styles.cardProgression}>Progression</Text>
               <Text style={styles.cardProgressionText}>
-                {userDetails.Grab}/{nbGrabsDone}
+                {userDetails?.Grab}/{nbGrabsDone}
               </Text>
-              <View style={styles.cardProgressBar} />
+              <View style={[styles.progression]}>
+                <ProgressBar
+                  style={styles.progressBar}
+                  progress={userDetails?.Grab / nbGrabsDone || 0}
+                  width={200}
+                />
+                <Text style={styles.progressBarText}>
+                  {' '}
+                  {((userDetails?.Grab / nbGrabsDone) * 100).toFixed(0)}%
+                </Text>
+              </View>
             </View>
             <View style={[styles.cardRightPart, styles.grabsRightPart]} />
           </View>
@@ -285,6 +314,17 @@ const styles = StyleSheet.create({
   },
   slidesCard: {
     backgroundColor: '#FA6767',
+  },
+  progression: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  progressBarText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#000',
   },
   cardRightPart: {
     borderTopLeftRadius: 50,
