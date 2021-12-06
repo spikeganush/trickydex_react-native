@@ -11,20 +11,34 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import Constants from 'expo-constants'
 
 import ProgressBar from 'react-native-progress/Bar'
-import SelectableChips from 'react-native-chip/SelectableChips'
 
 const Home = (props) => {
   const navigation = useNavigation()
   const [userDetails, setUserDetails] = useState()
   const [selectCategoryClicked, setSelectCategoryClicked] = useState(false)
-  const [selectedCategories, setSelectedCategories] = useState()
+  const [slidesIsSelected, setSlidesIsSelected] = useState()
+  const [airsIsSelected, setAirsIsSelected] = useState()
+  const [grabsIsSelected, setGrabsIsSelected] = useState()
 
   const [nbSlidesDone, setNbSlidesDone] = useState()
   const [nbAirsDone, setNbAirsDone] = useState()
   const [nbGrabsDone, setNbGrabsDone] = useState()
 
-  const handleChips = (props) => {
-    setSelectedCategories(props)
+  // const handleChips = (props) => {
+  //   setSelectedCategories(props)
+  // }
+
+  const saveVisibleCategories = (
+    slidesIsSelected,
+    airsIsSelected,
+    grabsIsSelected
+  ) => {
+    props.saveSelectedCategories(
+      userDetails?.id,
+      slidesIsSelected,
+      airsIsSelected,
+      grabsIsSelected
+    )
   }
 
   useFocusEffect(
@@ -47,6 +61,10 @@ const Home = (props) => {
       .getUserDetails(props.user?.uid)
       .then((document) => setUserDetails(document))
       .catch((error) => console.log(error))
+
+    setSlidesIsSelected(userDetails?.slideSelected)
+    setAirsIsSelected(userDetails?.airSelected)
+    setGrabsIsSelected(userDetails?.grabSelected)
   }
 
   useEffect(() => {
@@ -62,6 +80,18 @@ const Home = (props) => {
       setNbGrabsDone(props.getNbGrabsDone())
     }
   }, [])
+
+  useEffect(() => {
+    if (slidesIsSelected === undefined) {
+      setSlidesIsSelected(userDetails?.slideSelected)
+    }
+    if (airsIsSelected === undefined) {
+      setAirsIsSelected(userDetails?.airSelected)
+    }
+    if (grabsIsSelected === undefined) {
+      setGrabsIsSelected(userDetails?.grabSelected)
+    }
+  }, [userDetails])
 
   const Progressbar = (top, down) => {
     return (
@@ -106,93 +136,161 @@ const Home = (props) => {
           style={styles.buttonSelectedCategories}
           onPress={() => setSelectCategoryClicked(!selectCategoryClicked)}
         >
-          <Text style={styles.selectCategoriesText}>All Categories</Text>
+          <Text style={styles.selectCategoriesText}>Select Category</Text>
         </TouchableOpacity>
         {selectCategoryClicked ? (
-          <SelectableChips
-            initialChips={['All', 'Slides', 'Airs', 'Grabs']}
-            onChangeChips={(chips) => handleChips(chips)}
-            chipStyle={styles.chipStyle}
-            valueStyle={styles.chipValueStyle}
-            chipStyleSelected={styles.chipStyleSelected}
-            valueStyleSelected={styles.chipValueStyleSelected}
-            alertRequired={false}
-          />
+          <View style={styles.chipArea}>
+            <TouchableOpacity
+              style={[
+                styles.chipStyle,
+                slidesIsSelected ? styles.chipStyleSelected : null,
+              ]}
+              onPress={() => {
+                setSlidesIsSelected(!slidesIsSelected)
+                saveVisibleCategories(
+                  !slidesIsSelected,
+                  airsIsSelected,
+                  grabsIsSelected
+                )
+              }}
+            >
+              <Text
+                style={[
+                  styles.chipValueStyle,
+                  slidesIsSelected ? styles.chipValueStyleSelected : null,
+                ]}
+              >
+                Slides
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.chipStyle,
+                airsIsSelected ? styles.chipStyleSelected : null,
+              ]}
+              onPress={() => {
+                setAirsIsSelected(!airsIsSelected)
+                saveVisibleCategories(
+                  slidesIsSelected,
+                  !airsIsSelected,
+                  grabsIsSelected
+                )
+              }}
+            >
+              <Text
+                style={[
+                  styles.chipValueStyle,
+                  airsIsSelected ? styles.chipValueStyleSelected : null,
+                ]}
+              >
+                Airs
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.chipStyle,
+                grabsIsSelected ? styles.chipStyleSelected : null,
+              ]}
+              onPress={() => {
+                setGrabsIsSelected(!grabsIsSelected)
+                saveVisibleCategories(
+                  slidesIsSelected,
+                  airsIsSelected,
+                  !grabsIsSelected
+                )
+              }}
+            >
+              <Text
+                style={[
+                  styles.chipValueStyle,
+                  grabsIsSelected ? styles.chipValueStyleSelected : null,
+                ]}
+              >
+                Grabs
+              </Text>
+            </TouchableOpacity>
+          </View>
         ) : null}
       </View>
       <ScrollView style={styles.body}>
         {/* slides */}
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('DetailsTricks', { category: 'Slides' })
-          }
-        >
-          <View style={[styles.card, styles.slidesCard]}>
-            <View style={[styles.slidesinfo]}>
-              <Text style={styles.cardTitle}>Slides</Text>
-              <Text style={styles.cardProgression}>Progression</Text>
-              <Text style={styles.cardProgressionText}>
-                {userDetails?.Slide}/{nbSlidesDone}
-              </Text>
-              <View style={[styles.progression]}>
-                {Progressbar(userDetails?.Slide, nbSlidesDone)}
-                <Text style={styles.progressBarText}>
-                  {' '}
-                  {((userDetails?.Slide / nbSlidesDone) * 100).toFixed(0)}%
+        {slidesIsSelected ? (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('DetailsTricks', { category: 'Slides' })
+            }
+          >
+            <View style={[styles.card, styles.slidesCard]}>
+              <View style={[styles.slidesinfo]}>
+                <Text style={styles.cardTitle}>Slides</Text>
+                <Text style={styles.cardProgression}>Progression</Text>
+                <Text style={styles.cardProgressionText}>
+                  {userDetails?.Slide}/{nbSlidesDone}
                 </Text>
+                <View style={[styles.progression]}>
+                  {Progressbar(userDetails?.Slide, nbSlidesDone)}
+                  <Text style={styles.progressBarText}>
+                    {' '}
+                    {((userDetails?.Slide / nbSlidesDone) * 100).toFixed(0)}%
+                  </Text>
+                </View>
               </View>
+              <View style={[styles.cardRightPart, styles.slidesRightPart]} />
             </View>
-            <View style={[styles.cardRightPart, styles.slidesRightPart]} />
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        ) : null}
         {/* Airs */}
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('DetailsTricks', { category: 'Airs' })
-          }
-        >
-          <View style={[styles.card, styles.airsCard]}>
-            <View style={[styles.cardinfo]}>
-              <Text style={styles.cardTitle}>Airs</Text>
-              <Text style={styles.cardProgression}>Progression</Text>
-              <Text style={styles.cardProgressionText}>
-                {userDetails?.Air}/{nbAirsDone}
-              </Text>
-              <View style={[styles.progression]}>
-                {Progressbar(userDetails?.Air, nbAirsDone)}
-                <Text style={styles.progressBarText}>
-                  {' '}
-                  {((userDetails?.Air / nbAirsDone) * 100).toFixed(0)}%
+        {airsIsSelected ? (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('DetailsTricks', { category: 'Airs' })
+            }
+          >
+            <View style={[styles.card, styles.airsCard]}>
+              <View style={[styles.cardinfo]}>
+                <Text style={styles.cardTitle}>Airs</Text>
+                <Text style={styles.cardProgression}>Progression</Text>
+                <Text style={styles.cardProgressionText}>
+                  {userDetails?.Air}/{nbAirsDone}
                 </Text>
+                <View style={[styles.progression]}>
+                  {Progressbar(userDetails?.Air, nbAirsDone)}
+                  <Text style={styles.progressBarText}>
+                    {' '}
+                    {((userDetails?.Air / nbAirsDone) * 100).toFixed(0)}%
+                  </Text>
+                </View>
               </View>
+              <View style={[styles.cardRightPart, styles.airsRightPart]} />
             </View>
-            <View style={[styles.cardRightPart, styles.airsRightPart]} />
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        ) : null}
         {/* Grabs */}
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('DetailsTricks', { category: 'Grabs' })
-          }
-        >
-          <View style={[styles.card, styles.grabsCard]}>
-            <View style={[styles.cardinfo]}>
-              <Text style={styles.cardTitle}>Grabs</Text>
-              <Text style={styles.cardProgression}>Progression</Text>
-              <Text style={styles.cardProgressionText}>
-                {userDetails?.Grab}/{nbGrabsDone}
-              </Text>
-              <View style={[styles.progression]}>
-                {Progressbar(userDetails?.Grab, nbGrabsDone)}
-                <Text style={styles.progressBarText}>
-                  {' '}
-                  {((userDetails?.Grab / nbGrabsDone) * 100).toFixed(0)}%
+        {grabsIsSelected ? (
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('DetailsTricks', { category: 'Grabs' })
+            }
+          >
+            <View style={[styles.card, styles.grabsCard]}>
+              <View style={[styles.cardinfo]}>
+                <Text style={styles.cardTitle}>Grabs</Text>
+                <Text style={styles.cardProgression}>Progression</Text>
+                <Text style={styles.cardProgressionText}>
+                  {userDetails?.Grab}/{nbGrabsDone}
                 </Text>
+                <View style={[styles.progression]}>
+                  {Progressbar(userDetails?.Grab, nbGrabsDone)}
+                  <Text style={styles.progressBarText}>
+                    {' '}
+                    {((userDetails?.Grab / nbGrabsDone) * 100).toFixed(0)}%
+                  </Text>
+                </View>
               </View>
+              <View style={[styles.cardRightPart, styles.grabsRightPart]} />
             </View>
-            <View style={[styles.cardRightPart, styles.grabsRightPart]} />
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        ) : null}
       </ScrollView>
     </View>
   )
@@ -273,19 +371,36 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#757575',
   },
+  chipArea: {
+    flexDirection: 'row',
+  },
   chipStyle: {
     backgroundColor: '#DADADA',
     borderColor: '#DADADA',
+    marginHorizontal: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 15,
+    borderWidth: 1,
+    marginTop: 6,
   },
   chipValueStyle: {
     color: '#757575',
+    fontSize: 18,
   },
   chipStyleSelected: {
     backgroundColor: '#1A73E9',
     borderColor: '#1A73E9',
+    marginHorizontal: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 15,
+    borderWidth: 1,
+    marginTop: 6,
   },
   chipValueStyleSelected: {
     color: '#fff',
+    fontSize: 18,
   },
   body: {
     flex: 1,

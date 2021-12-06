@@ -57,6 +57,9 @@ export default function App() {
   const [slides, setSlides] = useState([])
   const [airs, setAirs] = useState([])
   const [grabs, setGrabs] = useState([])
+  const [slideSelected, setSlideSelected] = useState()
+  const [airSelected, setAirSelected] = useState()
+  const [grabSelected, setGrabSelected] = useState()
 
   useEffect(() => {
     onAuthStateChanged(FBauth, (user) => {
@@ -91,6 +94,9 @@ export default function App() {
           Grab: 0,
           Slide: 0,
           admin: false,
+          slideSelected: true,
+          airSelected: true,
+          grabSelected: true,
           listDone: [], //list of tricks done
         })
 
@@ -268,12 +274,6 @@ export default function App() {
       info: trickDescriptions,
       selected: false,
     })
-    console.log('id', id)
-    console.log('category', category)
-    console.log('trickName', trickName)
-    console.log('difficulty', difficulty)
-    console.log('trickDescriptions', trickDescriptions)
-
     category === 'Slide'
       ? getTricksPerCategory('Slides')
       : category === 'Air'
@@ -286,6 +286,15 @@ export default function App() {
     setTimeout(() => {
       getTricksPerCategory(category)
     }, 2000)
+  }
+
+  const saveSelectedCategories = async (id, slide, air, grab) => {
+    const docRef = doc(FSdb, 'Users', id)
+    await updateDoc(docRef, {
+      slideSelected: slide,
+      airSelected: air,
+      grabSelected: grab,
+    })
   }
 
   return (
@@ -322,6 +331,7 @@ export default function App() {
               getNbSlidesDone={getNbSlidesDone}
               getNbAirsDone={getNbAirsDone}
               getNbGrabsDone={getNbGrabsDone}
+              saveSelectedCategories={saveSelectedCategories}
             />
           )}
         </Stack.Screen>
@@ -331,7 +341,14 @@ export default function App() {
             headerTitle: 'Create Account',
           }}
         >
-          {(props) => <Signup {...props} user={user} handler={SignupHandler} />}
+          {(props) => (
+            <Signup
+              {...props}
+              user={user}
+              error={signinError}
+              handler={SignupHandler}
+            />
+          )}
         </Stack.Screen>
         <Stack.Screen
           name="Signin"
