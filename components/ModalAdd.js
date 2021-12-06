@@ -36,11 +36,6 @@ const ModalAdd = (props) => {
       setAddDifficulty(0)
     }
   }
-  //   category?.category === 'Slides'
-  //     ? setSlides(props.slides)
-  //     : category?.category === 'Airs'
-  //     ? setAirs(props.airs)
-  //     : setGrabs(props.grabs)
 
   return (
     <Modal
