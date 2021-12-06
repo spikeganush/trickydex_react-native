@@ -1,16 +1,5 @@
-import React, { useEffect, useState } from 'react'
-import {
-  View,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  Modal,
-  ScrollView,
-  TextInput,
-} from 'react-native'
-import { useRoute } from '@react-navigation/native'
-1
-import Slider from '@react-native-community/slider'
+import React from 'react'
+import { View, StyleSheet, Text, Modal, ScrollView } from 'react-native'
 
 const ModalInfo = (props) => {
   return (
@@ -29,6 +18,11 @@ const ModalInfo = (props) => {
             onPress={() => props.setmodalInfoVisible(false)}
           >
             X
+          </Text>
+        </View>
+        <View style={styles.modalDifficultyArea}>
+          <Text style={styles.modalDifficulty}>
+            Difficulty: {props.difficultyTrick}/5
           </Text>
         </View>
         <ScrollView>
@@ -85,5 +79,15 @@ const styles = StyleSheet.create({
     color: '#000',
     marginTop: 10,
     marginBottom: 10,
+  },
+  modalDifficultyArea: {
+    width: '100%',
+    justifyContent: 'flex-start',
+    marginBottom: 10,
+  },
+  modalDifficulty: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000',
   },
 })

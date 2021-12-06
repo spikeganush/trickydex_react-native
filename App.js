@@ -40,6 +40,7 @@ import {
   arrayUnion,
   arrayRemove,
   increment,
+  deleteDoc,
 } from 'firebase/firestore'
 
 const FBapp = initializeApp(firebaseConfig)
@@ -98,6 +99,9 @@ export default function App() {
       })
       .catch((error) => {
         setSignupError(error.code)
+        setTimeout(() => {
+          setSignupError('')
+        }, 3000)
       })
   }
 
@@ -113,6 +117,9 @@ export default function App() {
           ? error.code.split('/')[1].replace(/-/g, ' ')
           : error.code
         setSigninError(message)
+        setTimeout(() => {
+          setSigninError('')
+        }, 3000)
       })
   }
 
@@ -240,10 +247,45 @@ export default function App() {
       selected: false,
     })
 
-    getTricksPerCategory(category)
-    getNbAirsDone()
-    getNbGrabsDone()
-    getNbSlidesDone()
+    category === 'Slide'
+      ? getTricksPerCategory('Slides')
+      : category === 'Air'
+      ? getTricksPerCategory('Airs')
+      : getTricksPerCategory('Grabs')
+  }
+
+  const editTricks = async (
+    id,
+    category,
+    trickName,
+    difficulty,
+    trickDescriptions
+  ) => {
+    const query = await updateDoc(doc(FSdb, 'Tricks', id), {
+      category: category,
+      name: trickName,
+      difficulty: difficulty,
+      info: trickDescriptions,
+      selected: false,
+    })
+    console.log('id', id)
+    console.log('category', category)
+    console.log('trickName', trickName)
+    console.log('difficulty', difficulty)
+    console.log('trickDescriptions', trickDescriptions)
+
+    category === 'Slide'
+      ? getTricksPerCategory('Slides')
+      : category === 'Air'
+      ? getTricksPerCategory('Airs')
+      : getTricksPerCategory('Grabs')
+  }
+
+  const deleteTricks = async (category, trickId) => {
+    const query = await deleteDoc(doc(FSdb, 'Tricks', trickId))
+    setTimeout(() => {
+      getTricksPerCategory(category)
+    }, 2000)
   }
 
   return (
@@ -347,6 +389,8 @@ export default function App() {
               addTrickListDone={addTrickListDone}
               removeTrickListDone={removeTrickListDone}
               addTricks={addTricks}
+              deleteTrick={deleteTricks}
+              editTricks={editTricks}
             />
           )}
         </Stack.Screen>

@@ -14,20 +14,25 @@ const Signin = (props) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    if (error) {
-      setTimeout(() => {
-        setError('')
-      }, 3000)
-    }
-  }, [error])
+  const [loginText, setLoginText] = useState('LOGIN')
 
   useEffect(() => {
     if (props.auth === true) {
       navigation.reset({ index: 0, routes: [{ name: 'Home' }] })
     }
   }, [props.auth])
+
+  const handleSignin = () => {
+    if (email === '' || password === '') {
+      setError('Please fill all fields')
+      setTimeout(() => {
+        setError('')
+      }, 3000)
+    } else {
+      setLoginText('LOGGING IN...')
+      props.handler(email, password)
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -36,6 +41,7 @@ const Signin = (props) => {
       </View>
       <View style={styles.signinArea}>
         <Text style={styles.signinTitle}>Connect to your account</Text>
+        <Text style={styles.error}>{error || props.error}</Text>
         <TextInput
           style={styles.signinInput}
           placeholder="Email address"
@@ -59,10 +65,10 @@ const Signin = (props) => {
         <TouchableOpacity
           style={[styles.buttons, styles.signinButton]}
           onPress={() => {
-            props.handler(email, password)
+            handleSignin()
           }}
         >
-          <Text style={styles.buttonText}>LOGIN</Text>
+          <Text style={styles.buttonText}>{loginText}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.buttons, styles.signupButton]}
@@ -159,6 +165,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
     color: '#000',
+    textAlign: 'center',
+    paddingTop: 8,
+  },
+  error: {
+    color: 'red',
+    fontSize: 15,
+    fontWeight: 'bold',
     textAlign: 'center',
     paddingTop: 8,
   },

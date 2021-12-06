@@ -18,6 +18,8 @@ const Signup = (props) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
+  const [registerText, setRegisterText] = useState('REGISTER')
 
   const [firstNameHighlight, setFirstNameHighlight] = useState(false)
   const [lastNameHighlight, setLastNameHighlight] = useState(false)
@@ -25,6 +27,32 @@ const Signup = (props) => {
   const [passwordHighlight, setPasswordHighlight] = useState(false)
   const [confirmPasswordHighlight, setConfirmPasswordHighlight] =
     useState(false)
+
+  const handlerSignUp = () => {
+    if (
+      (firstName === undefined || firstName === '') &&
+      (lastName === undefined || lastName === '') &&
+      (email === undefined || email === '') &&
+      (password === undefined || password === '') &&
+      (confirmPassword === undefined || confirmPassword === '')
+    ) {
+      setError('Please fill all the fields')
+      setTimeout(() => {
+        setError('')
+      }, 3000)
+      return
+    }
+
+    if (password !== confirmPassword) {
+      setError('Password and Confirm Password does not match')
+      setTimeout(() => {
+        setError('')
+      }, 3000)
+      return
+    }
+    setRegisterText('Registering...')
+    props.handler(email, password, firstName, lastName)
+  }
 
   return (
     <View style={styles.container}>
@@ -98,13 +126,14 @@ const Signup = (props) => {
       </View>
 
       <View style={styles.buttonContainer}>
+        <Text style={styles.error}>{error || props.error}</Text>
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            props.handler(email, password, firstName, lastName)
+            handlerSignUp(email, password, firstName, lastName)
           }}
         >
-          <Text style={styles.buttonText}>REGISTER</Text>
+          <Text style={styles.buttonText}>{registerText}</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -175,5 +204,12 @@ const styles = StyleSheet.create({
     color: '#000',
     textAlign: 'center',
     paddingTop: 8,
+  },
+  error: {
+    color: 'red',
+    fontSize: 15,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
   },
 })

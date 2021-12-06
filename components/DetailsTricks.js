@@ -5,17 +5,16 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  Modal,
-  ScrollView,
-  TextInput,
 } from 'react-native'
 import { useRoute } from '@react-navigation/native'
 import ModalInfo from './ModalInfo'
-1
-import Slider from '@react-native-community/slider'
+import ModalDelete from './ModalDelete'
+import ModalAdd from './ModalAdd'
+import ModalEdit from './ModalEdit'
 
 const DetailsTricks = (props) => {
   const [modalInfoVisible, setmodalInfoVisible] = useState(false)
+  const [modalDeleteVisible, setmodalDeleteVisible] = useState(false)
   const [modalEditVisible, setmodalEditVisible] = useState(false)
   const [modalAddVisible, setmodalAddVisible] = useState(false)
   const route = useRoute()
@@ -26,15 +25,11 @@ const DetailsTricks = (props) => {
   const [userDetails, setUserDetails] = useState()
 
   const [nameTrickInfo, setNameTrickInfo] = useState()
+  const [idTrickInfo, setIdTrickInfo] = useState()
+  const [categoryTrickInfo, setCategoryTrickInfo] = useState()
+  const [difficultyTrickInfo, setDifficultyTrickInfo] = useState()
   const [descriptionTrickInfo, setDescriptionTrickInfo] = useState()
 
-  const [nameEdit, setNameEdit] = useState()
-  const [descriptionEdit, setDescriptionEdit] = useState()
-
-  const [nameAdd, setNameAdd] = useState()
-  const [descriptionAdd, setDescriptionAdd] = useState()
-
-  const [addDifficulty, setAddDifficulty] = useState(0)
   const [categoryAdd, setCategoryAdd] = useState()
 
   const getInfo = (id) => {
@@ -42,6 +37,9 @@ const DetailsTricks = (props) => {
       ? slides.map((slide) => {
           if (slide?.id.includes(id)) {
             setNameTrickInfo(slide?.name)
+            setIdTrickInfo(slide?.id)
+            setCategoryTrickInfo('Slide')
+            setDifficultyTrickInfo(slide?.difficulty)
             setDescriptionTrickInfo(slide?.info)
           }
         })
@@ -49,12 +47,18 @@ const DetailsTricks = (props) => {
       ? airs.map((air) => {
           if (air?.id === id) {
             setNameTrickInfo(air?.name)
+            setIdTrickInfo(air?.id)
+            setCategoryTrickInfo('Air')
+            setDifficultyTrickInfo(air?.difficulty)
             setDescriptionTrickInfo(air?.info)
           }
         })
       : grabs?.map((grab) => {
           if (grab?.id === id) {
             setNameTrickInfo(grab?.name)
+            setIdTrickInfo(grab?.id)
+            setCategoryTrickInfo('Grab')
+            setDifficultyTrickInfo(grab?.difficulty)
             setDescriptionTrickInfo(grab?.info)
           }
         })
@@ -63,6 +67,16 @@ const DetailsTricks = (props) => {
   const showInfo = (id) => {
     getInfo(id)
     setmodalInfoVisible(true)
+  }
+
+  const showDelete = (id) => {
+    getInfo(id)
+    setmodalDeleteVisible(true)
+  }
+
+  const showEdit = (id) => {
+    getInfo(id)
+    setmodalEditVisible(true)
   }
 
   useEffect(() => {
@@ -114,6 +128,30 @@ const DetailsTricks = (props) => {
       >
         <Text style={styles.name}>{item.name}</Text>
         <View style={styles.buttonPlusRightPart}>
+          {userDetails?.admin ? (
+            <>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  showDelete(item.id)
+                }}
+              >
+                <View style={styles.buttonInfo}>
+                  <Text style={styles.buttonText}>x</Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                  showEdit(item.id)
+                }}
+              >
+                <View style={styles.buttonInfo}>
+                  <Text style={styles.buttonText}>e</Text>
+                </View>
+              </TouchableOpacity>
+            </>
+          ) : null}
           <TouchableOpacity
             style={styles.button}
             onPress={() => {
@@ -126,6 +164,7 @@ const DetailsTricks = (props) => {
           </TouchableOpacity>
           <View
             style={[
+              !userDetails?.admin ? styles.marginRightNoAdmin : null,
               styles.rightPart,
               category.category === 'Slides'
                 ? styles.rightPartSlideBg
@@ -176,93 +215,44 @@ const DetailsTricks = (props) => {
     (grabs.length > 0 && category !== undefined)
   ) {
     // console.log('Category:', category.category)
+
     return (
       <View style={styles.container}>
         {/* Modal info */}
         <ModalInfo
           modalInfoVisible={modalInfoVisible}
           nameTrick={nameTrickInfo}
+          difficultyTrick={difficultyTrickInfo}
           descriptionTrick={descriptionTrickInfo}
           setmodalInfoVisible={setmodalInfoVisible}
         />
+        {/* Modal delete */}
+        <ModalDelete
+          modalDeleteVisible={modalDeleteVisible}
+          nameTrick={nameTrickInfo}
+          setmodalDeleteVisible={setmodalDeleteVisible}
+          deleteTrick={props.deleteTrick}
+          categoryTrick={categoryTrickInfo}
+          idTrick={idTrickInfo}
+        />
         {/* Modal add */}
-        <Modal
-          animationType="fade"
-          visible={modalAddVisible}
-          transparent={true}
-        >
-          <View style={styles.modalAddContainer}>
-            <View style={styles.modalHeader}>
-              <View style={styles.modalHeaderLeftPart}>
-                <Text style={styles.modalTitle}>Add {category?.category}</Text>
-              </View>
-              <Text
-                style={styles.closeModal}
-                onPress={() => setmodalAddVisible(false)}
-              >
-                X
-              </Text>
-            </View>
-            <Text style={styles.modalAddName}>{category?.category} Name</Text>
-            <TextInput
-              style={styles.modalAddNameInput}
-              onChangeText={(text) => setNameAdd(text)}
-            />
-            <Text style={styles.modalAddSlideText}>
-              {category?.category} difficulty: {addDifficulty}
-            </Text>
-
-            <Slider
-              value={addDifficulty}
-              onValueChange={(value) => setAddDifficulty(value)}
-              step={1}
-              minimumValue={0}
-              maximumValue={5}
-              style={{ width: '90%', height: 40 }}
-            />
-            <Text style={styles.modalAddName}>
-              {category?.category} information
-            </Text>
-            <TextInput
-              style={styles.modalAddInfoInput}
-              multiline
-              editable
-              maxLength={1000}
-              onChangeText={(text) => setDescriptionAdd(text)}
-            />
-            <View style={styles.modalButtonArea}>
-              <TouchableOpacity
-                style={[
-                  styles.modalButton,
-                  category.category === 'Slides'
-                    ? styles.containerCardListSlideBg
-                    : category.category === 'Airs'
-                    ? styles.containerCardListAirBg
-                    : styles.containerCardListGrabBg,
-                ]}
-                onPress={() => {
-                  props.addTricks(
-                    categoryAdd,
-                    nameAdd,
-                    addDifficulty,
-                    descriptionAdd
-                  )
-                  setmodalAddVisible(false)
-                  setNameAdd('')
-                  setDescriptionAdd('')
-                  setAddDifficulty(0)
-                  category?.category === 'Slides'
-                    ? setSlides(props.slides)
-                    : category?.category === 'Airs'
-                    ? setAirs(props.airs)
-                    : setGrabs(props.grabs)
-                }}
-              >
-                <Text style={styles.modalButtonText}>Save</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
+        <ModalAdd
+          modalAddVisible={modalAddVisible}
+          setmodalAddVisible={setmodalAddVisible}
+          addTricks={props.addTricks}
+          categoryTrick={categoryAdd}
+        />
+        {/* Modal edit */}
+        <ModalEdit
+          modalEditVisible={modalEditVisible}
+          setmodalEditVisible={setmodalEditVisible}
+          nameTrick={nameTrickInfo}
+          difficultyTrick={difficultyTrickInfo}
+          descriptionTrick={descriptionTrickInfo}
+          categoryTrick={categoryTrickInfo}
+          idTrick={idTrickInfo}
+          editTricks={props.editTricks}
+        />
         <View style={styles.title}>
           <Text style={styles.titleText}>{category?.category}</Text>
         </View>
@@ -337,20 +327,22 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 10,
   },
+  button: {
+    marginRight: 10,
+  },
   buttonInfo: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     borderColor: '#000',
     borderWidth: 1,
   },
   buttonText: {
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: 'bold',
     color: '#FFF',
     textAlign: 'center',
     textAlignVertical: 'center',
-    paddingBottom: 5,
   },
   buttonPlusRightPart: {
     flexDirection: 'row',
@@ -366,9 +358,11 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 10,
     borderTopLeftRadius: 30,
     borderBottomLeftRadius: 30,
-    marginLeft: 40,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  marginRightNoAdmin: {
+    marginLeft: 40,
   },
   rightPartSlideBg: {
     backgroundColor: '#FF9F9F',
@@ -437,72 +431,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000',
     paddingBottom: 5,
-  },
-  modalAddContainer: {
-    margin: 40,
-    height: 550,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 15,
-    alignItems: 'flex-start',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalAddName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000',
-    marginBottom: 10,
-  },
-  modalAddNameInput: {
-    width: '100%',
-    height: 50,
-    borderColor: '#000',
-    borderWidth: 1,
-    borderRadius: 10,
-    marginBottom: 10,
-    backgroundColor: '#F1F1F1',
-    padding: 15,
-  },
-  modalAddInfoInput: {
-    width: '100%',
-    height: 180,
-    borderColor: '#000',
-    borderWidth: 1,
-    textAlignVertical: 'top',
-    borderRadius: 10,
-    marginBottom: 10,
-    backgroundColor: '#F1F1F1',
-    padding: 15,
-  },
-  modalButtonArea: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-    width: '100%',
-  },
-  modalButton: {
-    width: 180,
-    height: 50,
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  modalButtonText: {
-    fontSize: 25,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  modalAddSlideText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000',
   },
 })
