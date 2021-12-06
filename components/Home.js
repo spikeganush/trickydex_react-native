@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import {
   Image,
   StyleSheet,
@@ -7,11 +7,10 @@ import {
   View,
   ScrollView,
 } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import Constants from 'expo-constants'
 
 import ProgressBar from 'react-native-progress/Bar'
-
 import SelectableChips from 'react-native-chip/SelectableChips'
 
 const Home = (props) => {
@@ -28,21 +27,29 @@ const Home = (props) => {
     setSelectedCategories(props)
   }
 
+  useFocusEffect(
+    useCallback(() => {
+      getUser()
+      setNbSlidesDone(props.getNbSlidesDone())
+      setNbAirsDone(props.getNbAirsDone())
+      setNbGrabsDone(props.getNbGrabsDone())
+    }, [])
+  )
+
   useEffect(() => {
     if (!props.auth) {
       navigation.reset({ index: 0, routes: [{ name: 'Signin' }] })
     }
   }, [props.auth])
 
-  useEffect(() => {
-    // console.log('Home.js: useEffect', props)
-    if (userDetails === undefined) {
-      props
-        .getUserDetails(props.user?.uid)
-        .then((document) => setUserDetails(document))
-        .catch((error) => console.log(error))
-    }
+  const getUser = () => {
+    props
+      .getUserDetails(props.user?.uid)
+      .then((document) => setUserDetails(document))
+      .catch((error) => console.log(error))
+  }
 
+  useEffect(() => {
     if (nbSlidesDone === undefined) {
       setNbSlidesDone(props.getNbSlidesDone())
     }
@@ -55,6 +62,18 @@ const Home = (props) => {
       setNbGrabsDone(props.getNbGrabsDone())
     }
   }, [])
+
+  const Progressbar = (top, down) => {
+    return (
+      <ProgressBar
+        style={styles.progressBar}
+        progress={top / down || 0}
+        width={200}
+        height={10}
+        borderRadius={6}
+      />
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -116,11 +135,7 @@ const Home = (props) => {
                 {userDetails?.Slide}/{nbSlidesDone}
               </Text>
               <View style={[styles.progression]}>
-                <ProgressBar
-                  style={styles.progressBar}
-                  progress={userDetails?.Slide / nbSlidesDone || 0}
-                  width={200}
-                />
+                {Progressbar(userDetails?.Slide, nbSlidesDone)}
                 <Text style={styles.progressBarText}>
                   {' '}
                   {((userDetails?.Slide / nbSlidesDone) * 100).toFixed(0)}%
@@ -144,11 +159,7 @@ const Home = (props) => {
                 {userDetails?.Air}/{nbAirsDone}
               </Text>
               <View style={[styles.progression]}>
-                <ProgressBar
-                  style={styles.progressBar}
-                  progress={userDetails?.Air / nbAirsDone || 0}
-                  width={200}
-                />
+                {Progressbar(userDetails?.Air, nbAirsDone)}
                 <Text style={styles.progressBarText}>
                   {' '}
                   {((userDetails?.Air / nbAirsDone) * 100).toFixed(0)}%
@@ -172,11 +183,7 @@ const Home = (props) => {
                 {userDetails?.Grab}/{nbGrabsDone}
               </Text>
               <View style={[styles.progression]}>
-                <ProgressBar
-                  style={styles.progressBar}
-                  progress={userDetails?.Grab / nbGrabsDone || 0}
-                  width={200}
-                />
+                {Progressbar(userDetails?.Grab, nbGrabsDone)}
                 <Text style={styles.progressBarText}>
                   {' '}
                   {((userDetails?.Grab / nbGrabsDone) * 100).toFixed(0)}%
@@ -327,8 +334,8 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   cardRightPart: {
-    borderTopLeftRadius: 50,
-    borderBottomLeftRadius: 50,
+    borderTopLeftRadius: 65,
+    borderBottomLeftRadius: 65,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
     height: '100%',

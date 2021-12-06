@@ -28,7 +28,6 @@ import {
 
 import {
   initializeFirestore,
-  getFirestore,
   setDoc,
   doc,
   addDoc,
@@ -107,7 +106,7 @@ export default function App() {
       .then(() => {
         setUser(FBauth.currentUser.user)
         setAuth(true)
-        console.log(FBauth.currentUser.uid)
+        // console.log(FBauth.currentUser.uid)
       })
       .catch((error) => {
         const message = error.code.includes('/')
@@ -213,18 +212,38 @@ export default function App() {
     const docRef = doc(FSdb, 'Users', userId)
     category === 'Slide'
       ? await updateDoc(docRef, {
-          listDone: arrayUnion(trickId),
+          listDone: arrayRemove(trickId),
           Slide: increment(-1),
         })
       : category === 'Air'
       ? await updateDoc(docRef, {
-          listDone: arrayUnion(trickId),
+          listDone: arrayRemove(trickId),
           Air: increment(-1),
         })
       : await updateDoc(docRef, {
-          listDone: arrayUnion(trickId),
+          listDone: arrayRemove(trickId),
           Grab: increment(-1),
         })
+  }
+
+  const addTricks = async (
+    category,
+    trickName,
+    difficulty,
+    trickDescriptions
+  ) => {
+    const query = await addDoc(collection(FSdb, 'Tricks'), {
+      category: category,
+      name: trickName,
+      difficulty: difficulty,
+      info: trickDescriptions,
+      selected: false,
+    })
+
+    getTricksPerCategory(category)
+    getNbAirsDone()
+    getNbGrabsDone()
+    getNbSlidesDone()
   }
 
   return (
@@ -307,7 +326,12 @@ export default function App() {
         <Stack.Screen
           name="DetailsTricks"
           options={{
-            headerTitle: 'Slides',
+            headerTitle: 'TrickyDex',
+            headerTitleStyle: {
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: '#1A73E9',
+            },
             headerShown: true,
           }}
         >
@@ -322,6 +346,7 @@ export default function App() {
               getUserDetails={getUserDetails}
               addTrickListDone={addTrickListDone}
               removeTrickListDone={removeTrickListDone}
+              addTricks={addTricks}
             />
           )}
         </Stack.Screen>
@@ -330,12 +355,3 @@ export default function App() {
     </NavigationContainer>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-})
