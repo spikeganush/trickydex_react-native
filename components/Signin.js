@@ -60,7 +60,18 @@ const Signin = (props) => {
           autoComplete="password"
           onChangeText={(text) => setPassword(text)}
         />
+        <View style={styles.forgotArea}>
+          <Text
+            style={styles.forgotPassword}
+            onPress={() => {
+              navigation.navigate('ForgotPassword')
+            }}
+          >
+            Forgot password?
+          </Text>
+        </View>
       </View>
+
       <View style={styles.signinButtonArea}>
         <TouchableOpacity
           style={[styles.buttons, styles.signinButton]}
@@ -107,7 +118,6 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
   },
   signinArea: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
@@ -140,6 +150,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     width: '100%',
     maxHeight: '20%',
+    marginTop: '20%',
   },
   buttons: {
     width: '70%',
@@ -174,5 +185,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     paddingTop: 8,
+  },
+  forgotPassword: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#1A73E9',
+  },
+  forgotArea: {
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+    width: '70%',
   },
 })

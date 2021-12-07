@@ -4,7 +4,6 @@ LogBox.ignoreLogs(['AsyncStorage'])
 
 import { StatusBar } from 'expo-status-bar'
 import React, { useEffect, useState } from 'react'
-import { StyleSheet } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 //components
@@ -12,6 +11,7 @@ import Splash from './components/Splash'
 import Home from './components/Home'
 import Signup from './components/Signup'
 import Signin from './components/Signin'
+import ForgotPassword from './components/ForgotPassword'
 import Signout from './components/Signout'
 import Profile from './components/Profile'
 import DetailsTricks from './components/DetailsTricks'
@@ -24,6 +24,7 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail,
 } from 'firebase/auth'
 
 import {
@@ -54,12 +55,11 @@ export default function App() {
   const [user, setUser] = useState()
   const [signupError, setSignupError] = useState()
   const [signinError, setSigninError] = useState()
+  const [forgotPasswordError, setForgotPasswordError] = useState()
+  const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState()
   const [slides, setSlides] = useState([])
   const [airs, setAirs] = useState([])
   const [grabs, setGrabs] = useState([])
-  const [slideSelected, setSlideSelected] = useState()
-  const [airSelected, setAirSelected] = useState()
-  const [grabSelected, setGrabSelected] = useState()
 
   useEffect(() => {
     onAuthStateChanged(FBauth, (user) => {
@@ -136,6 +136,22 @@ export default function App() {
         setUser(null)
       })
       .catch((error) => console.log(error.code))
+  }
+
+  const resetPassword = (email) => {
+    sendPasswordResetEmail(FBauth, email)
+      .then(() => {
+        setForgotPasswordSuccess('Email sent!')
+        setTimeout(() => {
+          setForgotPasswordSuccess('')
+        }, 3000)
+      })
+      .catch((error) => {
+        setForgotPasswordError(error.code)
+        setTimeout(() => {
+          setForgotPasswordError('')
+        }, 3000)
+      })
   }
 
   const getNbSlidesDone = () => {
@@ -339,13 +355,18 @@ export default function App() {
           name="Signup"
           options={{
             headerTitle: 'Create Account',
+            headerTitleStyle: {
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: '#1A73E9',
+            },
           }}
         >
           {(props) => (
             <Signup
               {...props}
               user={user}
-              error={signinError}
+              error={signupError}
               handler={SignupHandler}
             />
           )}
@@ -408,6 +429,28 @@ export default function App() {
               addTricks={addTricks}
               deleteTrick={deleteTricks}
               editTricks={editTricks}
+            />
+          )}
+        </Stack.Screen>
+
+        <Stack.Screen
+          name="ForgotPassword"
+          options={{
+            headerTitle: 'Forgot Password',
+            headerTitleStyle: {
+              fontSize: 20,
+              fontWeight: 'bold',
+              color: '#1A73E9',
+            },
+            headerShown: true,
+          }}
+        >
+          {(props) => (
+            <ForgotPassword
+              {...props}
+              error={forgotPasswordError}
+              success={forgotPasswordSuccess}
+              onSubmit={resetPassword}
             />
           )}
         </Stack.Screen>
