@@ -20,14 +20,6 @@ const Home = (props) => {
   const [airsIsSelected, setAirsIsSelected] = useState()
   const [grabsIsSelected, setGrabsIsSelected] = useState()
 
-  const [nbSlidesDone, setNbSlidesDone] = useState()
-  const [nbAirsDone, setNbAirsDone] = useState()
-  const [nbGrabsDone, setNbGrabsDone] = useState()
-
-  // const handleChips = (props) => {
-  //   setSelectedCategories(props)
-  // }
-
   const saveVisibleCategories = (
     slidesIsSelected,
     airsIsSelected,
@@ -44,9 +36,6 @@ const Home = (props) => {
   useFocusEffect(
     useCallback(() => {
       getUser()
-      setNbSlidesDone(props.getNbSlidesDone())
-      setNbAirsDone(props.getNbAirsDone())
-      setNbGrabsDone(props.getNbGrabsDone())
     }, [])
   )
 
@@ -67,19 +56,11 @@ const Home = (props) => {
     setGrabsIsSelected(userDetails?.grabSelected)
   }
 
-  useEffect(() => {
-    if (nbSlidesDone === undefined) {
-      setNbSlidesDone(props.getNbSlidesDone())
-    }
-
-    if (nbAirsDone === undefined) {
-      setNbAirsDone(props.getNbAirsDone())
-    }
-
-    if (nbGrabsDone === undefined) {
-      setNbGrabsDone(props.getNbGrabsDone())
-    }
-  }, [])
+  // useEffect(() => {
+  //   setNbSlidesDone(props.getNbSlidesDone())
+  //   setNbAirsDone(props.getNbAirsDone())
+  //   setNbGrabsDone(props.getNbGrabsDone())
+  // }, [])
 
   useEffect(() => {
     if (slidesIsSelected === undefined) {
@@ -227,13 +208,16 @@ const Home = (props) => {
                 <Text style={styles.cardTitle}>Slides</Text>
                 <Text style={styles.cardProgression}>Progression</Text>
                 <Text style={styles.cardProgressionText}>
-                  {userDetails?.Slide}/{nbSlidesDone}
+                  {userDetails?.Slide}/{props.nbSlidesDone}
                 </Text>
                 <View style={[styles.progression]}>
-                  {Progressbar(userDetails?.Slide, nbSlidesDone)}
+                  {Progressbar(userDetails?.Slide, props.nbSlidesDone)}
                   <Text style={styles.progressBarText}>
                     {' '}
-                    {((userDetails?.Slide / nbSlidesDone) * 100).toFixed(0)}%
+                    {((userDetails?.Slide / props.nbSlidesDone) * 100).toFixed(
+                      0
+                    )}
+                    %
                   </Text>
                 </View>
               </View>
@@ -253,13 +237,13 @@ const Home = (props) => {
                 <Text style={styles.cardTitle}>Airs</Text>
                 <Text style={styles.cardProgression}>Progression</Text>
                 <Text style={styles.cardProgressionText}>
-                  {userDetails?.Air}/{nbAirsDone}
+                  {userDetails?.Air}/{props.nbAirsDone}
                 </Text>
                 <View style={[styles.progression]}>
-                  {Progressbar(userDetails?.Air, nbAirsDone)}
+                  {Progressbar(userDetails?.Air, props.nbAirsDone)}
                   <Text style={styles.progressBarText}>
                     {' '}
-                    {((userDetails?.Air / nbAirsDone) * 100).toFixed(0)}%
+                    {((userDetails?.Air / props.nbAirsDone) * 100).toFixed(0)}%
                   </Text>
                 </View>
               </View>
@@ -279,13 +263,14 @@ const Home = (props) => {
                 <Text style={styles.cardTitle}>Grabs</Text>
                 <Text style={styles.cardProgression}>Progression</Text>
                 <Text style={styles.cardProgressionText}>
-                  {userDetails?.Grab}/{nbGrabsDone}
+                  {userDetails?.Grab}/{props.nbGrabsDone}
                 </Text>
                 <View style={[styles.progression]}>
-                  {Progressbar(userDetails?.Grab, nbGrabsDone)}
+                  {Progressbar(userDetails?.Grab, props.nbGrabsDone)}
                   <Text style={styles.progressBarText}>
                     {' '}
-                    {((userDetails?.Grab / nbGrabsDone) * 100).toFixed(0)}%
+                    {((userDetails?.Grab / props.nbGrabsDone) * 100).toFixed(0)}
+                    %
                   </Text>
                 </View>
               </View>

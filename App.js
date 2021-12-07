@@ -61,6 +61,10 @@ export default function App() {
   const [airs, setAirs] = useState([])
   const [grabs, setGrabs] = useState([])
 
+  const [nbSlidesDone, setNbSlidesDone] = useState()
+  const [nbAirsDone, setNbAirsDone] = useState()
+  const [nbGrabsDone, setNbGrabsDone] = useState()
+
   useEffect(() => {
     onAuthStateChanged(FBauth, (user) => {
       if (user) {
@@ -80,6 +84,18 @@ export default function App() {
         setUser(null)
       }
     })
+  })
+
+  useEffect(() => {
+    if (slides.length !== 0) {
+      setNbSlidesDone(getNbSlidesDone())
+    }
+    if (airs.length !== 0) {
+      setNbAirsDone(getNbAirsDone())
+    }
+    if (grabs.length !== 0) {
+      setNbGrabsDone(getNbGrabsDone())
+    }
   })
 
   const SignupHandler = (email, password, firstName, lastName) => {
@@ -270,10 +286,14 @@ export default function App() {
     })
 
     category === 'Slide'
-      ? getTricksPerCategory('Slides')
+      ? getTricksPerCategory('Slide')
       : category === 'Air'
-      ? getTricksPerCategory('Airs')
-      : getTricksPerCategory('Grabs')
+      ? getTricksPerCategory('Air')
+      : getTricksPerCategory('Grab')
+
+    getNbAirsDone()
+    getNbSlidesDone()
+    getNbGrabsDone()
   }
 
   const editTricks = async (
@@ -291,10 +311,10 @@ export default function App() {
       selected: false,
     })
     category === 'Slide'
-      ? getTricksPerCategory('Slides')
+      ? getTricksPerCategory('Slide')
       : category === 'Air'
-      ? getTricksPerCategory('Airs')
-      : getTricksPerCategory('Grabs')
+      ? getTricksPerCategory('Air')
+      : getTricksPerCategory('Grab')
   }
 
   const deleteTricks = async (category, trickId) => {
@@ -344,9 +364,9 @@ export default function App() {
               user={user}
               auth={auth}
               getUserDetails={getUserDetails}
-              getNbSlidesDone={getNbSlidesDone}
-              getNbAirsDone={getNbAirsDone}
-              getNbGrabsDone={getNbGrabsDone}
+              nbSlidesDone={nbSlidesDone}
+              nbAirsDone={nbAirsDone}
+              nbGrabsDone={nbGrabsDone}
               saveSelectedCategories={saveSelectedCategories}
             />
           )}
