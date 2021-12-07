@@ -99,8 +99,10 @@ const Home = (props) => {
         style={styles.progressBar}
         progress={top / down || 0}
         width={200}
-        height={10}
+        height={12}
         borderRadius={6}
+        backgroundColor={'#e0e0e0'}
+        borderWidth={0}
       />
     )
   }
