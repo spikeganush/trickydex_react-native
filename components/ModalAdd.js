@@ -34,6 +34,7 @@ const ModalAdd = (props) => {
       setNameAdd('')
       setDescriptionAdd('')
       setAddDifficulty(0)
+      props.getTricksPerCategory(category)
     }
   }
 

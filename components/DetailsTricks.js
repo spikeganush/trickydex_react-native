@@ -88,9 +88,8 @@ const DetailsTricks = (props) => {
       setCategoryAdd('Grab')
     }
 
-    if (slides.length === 0) {
-      setSlides(props.slides)
-    }
+    setSlides(props.slides)
+
     if (airs.length === 0) {
       setAirs(props.airs)
     }
@@ -241,6 +240,7 @@ const DetailsTricks = (props) => {
           setmodalAddVisible={setmodalAddVisible}
           addTricks={props.addTricks}
           categoryTrick={categoryAdd}
+          getTricksPerCategory={props.getTricksPerCategory}
         />
         {/* Modal edit */}
         <ModalEdit
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
   buttonAdd: {
     position: 'absolute',
     bottom: 10,
-    right: 10,
+    right: 35,
     width: 55,
     height: 55,
     borderRadius: 28,

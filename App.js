@@ -70,21 +70,24 @@ export default function App() {
       if (user) {
         setAuth(true)
         setUser(user)
-        if (slides.length === 0) {
-          getTricksPerCategory('Slide')
-        }
-        if (airs.length === 0) {
-          getTricksPerCategory('Air')
-        }
-        if (grabs.length === 0) {
-          getTricksPerCategory('Grab')
-        }
       } else {
         setAuth(false)
         setUser(null)
       }
     })
   })
+
+  useEffect(() => {
+    if (slides.length === 0) {
+      getTricksPerCategory('Slide')
+    }
+    if (airs.length === 0) {
+      getTricksPerCategory('Air')
+    }
+    if (grabs.length === 0) {
+      getTricksPerCategory('Grab')
+    }
+  }, [slides, airs, grabs])
 
   useEffect(() => {
     if (slides.length !== 0) {
@@ -96,7 +99,7 @@ export default function App() {
     if (grabs.length !== 0) {
       setNbGrabsDone(getNbGrabsDone())
     }
-  })
+  }, [slides, airs, grabs])
 
   const SignupHandler = (email, password, firstName, lastName) => {
     setSignupError(null)
@@ -284,16 +287,6 @@ export default function App() {
       info: trickDescriptions,
       selected: false,
     })
-
-    category === 'Slide'
-      ? getTricksPerCategory('Slide')
-      : category === 'Air'
-      ? getTricksPerCategory('Air')
-      : getTricksPerCategory('Grab')
-
-    getNbAirsDone()
-    getNbSlidesDone()
-    getNbGrabsDone()
   }
 
   const editTricks = async (
@@ -310,11 +303,7 @@ export default function App() {
       info: trickDescriptions,
       selected: false,
     })
-    category === 'Slide'
-      ? getTricksPerCategory('Slide')
-      : category === 'Air'
-      ? getTricksPerCategory('Air')
-      : getTricksPerCategory('Grab')
+    // getTricksPerCategory(category)
   }
 
   const deleteTricks = async (category, trickId) => {
@@ -449,6 +438,7 @@ export default function App() {
               addTricks={addTricks}
               deleteTrick={deleteTricks}
               editTricks={editTricks}
+              getTricksPerCategory={getTricksPerCategory}
             />
           )}
         </Stack.Screen>
